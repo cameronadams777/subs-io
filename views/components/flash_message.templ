@@ -1,0 +1,15 @@
+package components
+
+type FlashMessageProps struct {
+	Message string
+}
+
+templ FlashMessage(props FlashMessageProps) {
+	if props.Message != "" {
+		<div id="flash-message" class="fixed top-0 left-0 w-full bg-red-500 text-white p-4 animate-slideInFromTop z-100">
+			{ props.Message }
+		</div>
+	} else {
+		<div id="flash-message" class="z-100"></div>
+	}
+}

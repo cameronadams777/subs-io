@@ -1,0 +1,5 @@
+development:
+  dialect: postgres
+  datasource: host=localhost port=40300 dbname=subsio_db user=myuser password=mypassword sslmode=disable
+  dir: database/migrations
+  table: migrations

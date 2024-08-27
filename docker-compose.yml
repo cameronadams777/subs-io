@@ -1,0 +1,15 @@
+
+services:
+  database:
+    image: postgres
+    environment:
+      POSTGRES_DB: subsio_db
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "40300:5432"
+    volumes:
+      - database-data:/var/lib/postgres/data/ # persist data even if container shuts down
+
+volumes:
+  database-data:
