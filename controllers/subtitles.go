@@ -2,6 +2,9 @@ package controllers
 
 import (
 	"app/views/components"
+	"fmt"
+	"os/exec"
+	"time"
 
 	"io"
 	"net/http"
@@ -14,6 +17,34 @@ import (
 type SubtitlesController struct {}
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 1024
+
+func output_command_logs(cmd *exec.Cmd) {
+	stdout, err := cmd.StdoutPipe()
+	cmd.Stderr = cmd.Stdout
+	if err != nil {
+    fmt.Println("Error creating StdoutPipe:", err)
+		return
+	}
+	if err = cmd.Start(); err != nil {
+    fmt.Println("Error starting command:", err)
+		return
+	}
+	for {
+		tmp := make([]byte, 1024)
+		_, err := stdout.Read(tmp)
+		fmt.Print(string(tmp))
+		if err != nil {
+			break
+		}
+	}
+}
+
+func generate_subtitles(file_path string) {
+	command := "whisperx " + file_path + " --model medium.en --output_dir ./uploads --align_model WAV2VEC2_ASR_LARGE_LV60K_960H --batch_size 4 --compute_type float_32"
+	command_arr := strings.Split(command, " ")
+  cmd := exec.Command(command_arr[0], command_arr[1:]...)
+  output_command_logs(cmd)
+}
 
 func (sc *SubtitlesController) HandleSubtitlesCreate(c echo.Context) error {
 	c.Request().Body = http.MaxBytesReader(c.Response(), c.Request().Body, MAX_UPLOAD_SIZE)
@@ -56,6 +87,8 @@ func (sc *SubtitlesController) HandleSubtitlesCreate(c echo.Context) error {
 		}))
 	}
 
-  c.Response().Header().Set("HX-Location", "/")
-  return c.String(http.StatusOK, "")
+  //time.Sleep(15 * time.Second)
+
+  c.Response().Header().Set("HX-Retarget", "#upload-form")
+  return c.String(http.StatusOK, "Success")
 }

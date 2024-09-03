@@ -10,9 +10,11 @@ templ HomeIndex(props HomePageProps) {
 	@layouts.AppLayout() {
 		<div class="w-full h-full flex justify-center items-center">
 			<form
+				id="upload-form"
 				hx-post="/subtitles/create"
 				hx-encoding="multipart/form-data"
 				hx-target="#flash-message"
+        hx-swap="outerHTML"
 				hx-trigger="input change"
 				class="flex flex-col justify-center items-center"
 			>
@@ -20,9 +22,10 @@ templ HomeIndex(props HomePageProps) {
 				<h1 class="text-4xl font-bold mb-2">Welcome to Subs.io</h1>
 				<p class="text-lg mb-4">Upload a video and we'll generate subtitles for you</p>
 				<button
-					type="button"
-					class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg"
+					class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          hx-disabled-elt="this"
 					onclick="document.getElementById('video').click()"
+					type="button"
 				>
 					Select a video
 				</button>

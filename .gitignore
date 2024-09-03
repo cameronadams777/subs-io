@@ -4,6 +4,9 @@ views/**/*_templ.go
 tmp/
 data/
 
+# Uploads
+uploads/
+
 # Dependencies
 node_modules/
 
