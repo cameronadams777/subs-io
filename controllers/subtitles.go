@@ -2,19 +2,18 @@ package controllers
 
 import (
 	"app/views/components"
-	"fmt"
-	"os/exec"
-	"time"
 
+	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/labstack/echo/v4"
 )
 
-type SubtitlesController struct {}
+type SubtitlesController struct{}
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 1024
 
@@ -22,11 +21,11 @@ func output_command_logs(cmd *exec.Cmd) {
 	stdout, err := cmd.StdoutPipe()
 	cmd.Stderr = cmd.Stdout
 	if err != nil {
-    fmt.Println("Error creating StdoutPipe:", err)
+		fmt.Println("Error creating StdoutPipe:", err)
 		return
 	}
 	if err = cmd.Start(); err != nil {
-    fmt.Println("Error starting command:", err)
+		fmt.Println("Error starting command:", err)
 		return
 	}
 	for {
@@ -40,10 +39,18 @@ func output_command_logs(cmd *exec.Cmd) {
 }
 
 func generate_subtitles(file_path string) {
-	command := "whisperx " + file_path + " --model medium.en --output_dir ./uploads --align_model WAV2VEC2_ASR_LARGE_LV60K_960H --batch_size 4 --compute_type float_32"
-	command_arr := strings.Split(command, " ")
-  cmd := exec.Command(command_arr[0], command_arr[1:]...)
-  output_command_logs(cmd)
+	whisper_command := "whisperx " + file_path + ".mp4 --model medium.en --output_dir ./uploads --align_model WAV2VEC2_ASR_LARGE_LV60K_960H --batch_size 4 --compute_type float32"
+	whisper_command_arr := strings.Split(whisper_command, " ")
+	whisper_exec := exec.Command(whisper_command_arr[0], whisper_command_arr[1:]...)
+	output_command_logs(whisper_exec)
+
+	ffmpeg_command := "ffmpeg -i " + file_path + ".mp4 -vf subtitles=" + file_path + ".srt " + file_path + "_subbed.mp4"
+	ffmpeg_command_arr := strings.Split(ffmpeg_command, " ")
+	ffmpeg_exec := exec.Command(ffmpeg_command_arr[0], ffmpeg_command_arr[1:]...)
+	output_command_logs(ffmpeg_exec)
+}
+
+func generate_subbed_video(file_path string) {
 }
 
 func (sc *SubtitlesController) HandleSubtitlesCreate(c echo.Context) error {
@@ -87,8 +94,10 @@ func (sc *SubtitlesController) HandleSubtitlesCreate(c echo.Context) error {
 		}))
 	}
 
-  //time.Sleep(15 * time.Second)
+	path := "uploads/" + strings.Split(file_name, ".")[0]
 
-  c.Response().Header().Set("HX-Retarget", "#upload-form")
-  return c.String(http.StatusOK, "Success")
+	generate_subtitles(path)
+
+	c.Response().Header().Set("HX-Retarget", "#upload-form")
+	return c.String(http.StatusOK, "Success")
 }
