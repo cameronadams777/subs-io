@@ -5,7 +5,6 @@ import (
 	"app/views/pages"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 type ApplicationViewHandler struct {}
@@ -26,7 +25,7 @@ func (av *ApplicationViewHandler) HandleHomeIndex(c echo.Context) error {
 	return render_with_context(
     c,
     pages.HomeIndex(pages.HomePageProps{
-			Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
+			Token: "",
     }),
     app_context,
   )

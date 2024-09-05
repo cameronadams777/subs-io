@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"app/services"
 	"app/views/components"
 
 	"fmt"
@@ -11,9 +12,12 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
-type SubtitlesController struct{}
+type SubtitlesController struct{
+  DB *gorm.DB
+}
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 1024
 
@@ -94,10 +98,34 @@ func (sc *SubtitlesController) HandleSubtitlesCreate(c echo.Context) error {
 		}))
 	}
 
-	path := "uploads/" + strings.Split(file_name, ".")[0]
+	user_id := c.Get("user_id")
 
-	generate_subtitles(path)
+	if user_id == nil {
+		user_id = c.Get("uid").(string)
+	}
 
-	c.Response().Header().Set("HX-Retarget", "#upload-form")
-	return c.String(http.StatusOK, "Success")
+  title := strings.Split(file_name, ".")[0]
+
+  posts_service := services.PostService{
+    DB: sc.DB,
+  }
+  fmt.Println("title: ", title)
+  _, err = posts_service.Create(services.CreatePostParams{
+    Title: title,
+    UserID: user_id.(string),
+    Status: "processing",
+  })
+
+  if err != nil {
+    return render(c, components.FlashMessage(components.FlashMessageProps{
+      Message: "An unexpected error occurred",
+    }))
+  }
+
+	path := "uploads/" + title
+
+	go generate_subtitles(path)
+
+  c.Response().Header().Set("HX-Location", "/posts")
+	return c.String(http.StatusOK, "")
 }

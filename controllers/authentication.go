@@ -9,7 +9,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 )
 
@@ -20,7 +19,7 @@ type AuthenticationController struct {
 func (ac *AuthenticationController) HandleLoginIndex(c echo.Context) error {
 	return render(c, pages.LoginIndex(
 		pages.LoginIndexPageProps{
-			Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
+			Token: "",
 		},
 	))
 }
@@ -60,7 +59,7 @@ func (ac *AuthenticationController) HandleLoginCreate(c echo.Context) error {
 func (ac *AuthenticationController) HandleRegisterIndex(c echo.Context) error {
 	return render(c, pages.RegisterIndex(
 		pages.RegisterIndexPageProps{
-			Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
+			Token: "",
 		},
 	))
 }
@@ -93,7 +92,7 @@ func (ac *AuthenticationController) HandleRegisterCreate(c echo.Context) error {
 func (ac *AuthenticationController) HandleForgotPasswordIndex(c echo.Context) error {
 	return render(c, pages.ForgotPasswordIndex(
 		pages.ForgotPasswordIndexPageProps{
-			Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
+			Token: "",
     },
 	))
 }

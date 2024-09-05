@@ -1,0 +1,53 @@
+package post_pages
+
+import (
+	"app/models"
+	"app/views/layouts"
+
+	"strings"
+)
+
+type PostIndexPageProps struct {
+	Posts []models.Post
+}
+
+templ PostIndex(props PostIndexPageProps) {
+	@layouts.AppLayout() {
+		<div class="p-4 w-full container mx-auto">
+			<h1 class="text-2xl font-bold mb-4">Posts</h1>
+			@posts(props.Posts)
+		</div>
+	}
+}
+
+templ posts(posts []models.Post) {
+	<ul>
+		for _, post := range posts {
+			<li class="py-4 flex justify-between items-center border-b border-gray-300">
+				{ post.Title }
+        @status(post.Status)
+				<div>
+					<a href={ templ.URL("/posts/" + post.ID.String()) } class="hover:text-indigo-500 transition-colors duration-300">View</a>
+          if post.URL != "" {
+            <a href={ templ.URL("/posts/" + post.ID.String() + "/download") } class="hover:text-indigo-500 ml-4 transition-colors duration-300">Download</a>
+          }
+				</div>
+			</li>
+		}
+	</ul>
+}
+
+func status_color(status string) string {
+  switch status {
+  case "processing":
+    return "bg-yellow-200 text-yellow-800"
+  case "complete":
+    return "bg-green-200 text-green-800"
+  default:
+    return "bg-gray-200 text-gray-800"
+  }
+}
+
+templ status(status string) {
+  <span class={ "w-full text-sm text-center px-2 py-1 rounded-full " + status_color(status) }>{ strings.Title(status) }</span>
+}

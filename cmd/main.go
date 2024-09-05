@@ -29,10 +29,6 @@ func main() {
 
 	app.Static("/assets", "assets")
 
-	app.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "form:_csrf",
-	}))
-
   application_views_controller := controllers.ApplicationViewHandler{}
   app.GET("/error", application_views_controller.HandleErrorIndex)
   app.GET("/not_found", application_views_controller.HandleNotFoundIndex)
@@ -60,8 +56,16 @@ func main() {
   users.PATCH("/update", users_controller.HandleUsersUpdate)
 
   subtitles := app.Group("/subtitles")
-  subtitles_controller := controllers.SubtitlesController{}
+  subtitles_controller := controllers.SubtitlesController{
+    DB: db,
+  }
   subtitles.POST("/create", subtitles_controller.HandleSubtitlesCreate)
+
+  posts := app.Group("/posts")
+  posts_controller := controllers.PostsController{
+    DB: db,
+  }
+  posts.GET("", posts_controller.HandlePostsIndex)
 
 	app.Logger.Fatal(app.Start(":4000"))
 }

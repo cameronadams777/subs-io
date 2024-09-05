@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 )
 
@@ -32,7 +31,7 @@ func (uc *UsersController) HandleUsersEdit(c echo.Context) error {
 	}
 
 	return render_with_context(c, user_pages.UserEdit(user_pages.UserEditPageProps{
-		Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
+		Token: "",
 		User:  *user,
 	}), app_context)
 }
