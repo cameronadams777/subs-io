@@ -77,7 +77,7 @@ func (ps *PostService) Create(params CreatePostParams) (*models.Post, error) {
 }
 
 type UpdatePostParams struct {
-	ID     string
+	ID    uuid.UUID
 	Title  string
 	Status string
 	URL    string
@@ -89,26 +89,13 @@ func (ps *PostService) Update(updates UpdatePostParams) (*models.Post, error) {
 		DB: ps.DB,
 	}
 
-  user_id, err := uuid.Parse(updates.UserID)
-
-  if err != nil {
-    return nil, err
-  }
-
 	updated_post := models.Post{
 		Title:  updates.Title,
 		Status: updates.Status,
 		URL:    updates.URL,
-		UserID: user_id,
 	}
 
-	post_id, err := uuid.Parse(updates.ID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	post, err := post_repo.Update(post_id, updated_post)
+	post, err := post_repo.Update(updates.ID, updated_post)
 
 	if err != nil {
 		return nil, err

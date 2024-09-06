@@ -11,12 +11,13 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
-type SubtitlesController struct{
-  DB *gorm.DB
+type SubtitlesController struct {
+	DB *gorm.DB
 }
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 1024
@@ -42,7 +43,7 @@ func output_command_logs(cmd *exec.Cmd) {
 	}
 }
 
-func generate_subtitles(file_path string) {
+func generate_subtitles(db *gorm.DB, post_id uuid.UUID, file_path string) {
 	whisper_command := "whisperx " + file_path + ".mp4 --model medium.en --output_dir ./uploads --align_model WAV2VEC2_ASR_LARGE_LV60K_960H --batch_size 4 --compute_type float32"
 	whisper_command_arr := strings.Split(whisper_command, " ")
 	whisper_exec := exec.Command(whisper_command_arr[0], whisper_command_arr[1:]...)
@@ -52,9 +53,20 @@ func generate_subtitles(file_path string) {
 	ffmpeg_command_arr := strings.Split(ffmpeg_command, " ")
 	ffmpeg_exec := exec.Command(ffmpeg_command_arr[0], ffmpeg_command_arr[1:]...)
 	output_command_logs(ffmpeg_exec)
-}
 
-func generate_subbed_video(file_path string) {
+	posts_service := services.PostService{
+		DB: db,
+	}
+
+  _, err := posts_service.Update(services.UpdatePostParams{
+    ID: post_id,
+    URL: file_path + "_subbed.mp4",
+    Status: "completed",
+  })
+
+  if err != nil {
+    fmt.Println("Error updating post: ", err)
+  }
 }
 
 func (sc *SubtitlesController) HandleSubtitlesCreate(c echo.Context) error {
@@ -104,28 +116,28 @@ func (sc *SubtitlesController) HandleSubtitlesCreate(c echo.Context) error {
 		user_id = c.Get("uid").(string)
 	}
 
-  title := strings.Split(file_name, ".")[0]
+	title := strings.Split(file_name, ".")[0]
 
-  posts_service := services.PostService{
-    DB: sc.DB,
-  }
-  fmt.Println("title: ", title)
-  _, err = posts_service.Create(services.CreatePostParams{
-    Title: title,
-    UserID: user_id.(string),
-    Status: "processing",
-  })
+	posts_service := services.PostService{
+		DB: sc.DB,
+	}
 
-  if err != nil {
-    return render(c, components.FlashMessage(components.FlashMessageProps{
-      Message: "An unexpected error occurred",
-    }))
-  }
+  new_post, err := posts_service.Create(services.CreatePostParams{
+		Title:  title,
+		UserID: user_id.(string),
+		Status: "processing",
+	})
+
+	if err != nil {
+		return render(c, components.FlashMessage(components.FlashMessageProps{
+			Message: "An unexpected error occurred",
+		}))
+	}
 
 	path := "uploads/" + title
 
-	go generate_subtitles(path)
+	go generate_subtitles(sc.DB, new_post.ID, path)
 
-  c.Response().Header().Set("HX-Location", "/posts")
+	c.Response().Header().Set("HX-Location", "/posts")
 	return c.String(http.StatusOK, "")
 }
