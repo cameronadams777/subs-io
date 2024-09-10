@@ -5,19 +5,10 @@ import (
 	"app/repositories"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
-type UserService struct {
-  DB *gorm.DB
-}
-
-func (us *UserService) FindByID(id string) (*models.User, error) {
-  user_repo := repositories.UserRepository{
-    DB: us.DB,
-  }
-
-  user, err := user_repo.FindUser(repositories.FindUserParams{
+func FindUserByID(id string) (*models.User, error) {
+  user, err := repositories.FindUser(repositories.FindUserParams{
     ID: id,
   })
 
@@ -35,11 +26,7 @@ type UpdateUserParams struct {
   Email string `form:"email"`
 }
 
-func (us *UserService) Update(updates UpdateUserParams) (*models.User, error) {
-  user_repo := repositories.UserRepository {
-    DB: us.DB,
-  }
-
+func UpdateUser(updates UpdateUserParams) (*models.User, error) {
   updated_user := models.User {
     FirstName: updates.FirstName,
     LastName: updates.LastName,
@@ -52,7 +39,7 @@ func (us *UserService) Update(updates UpdateUserParams) (*models.User, error) {
     return nil, err
   }
 
-  user, err := user_repo.Update(user_id, updated_user)
+  user, err := repositories.UpdateUser(user_id, updated_user)
 
   if err != nil {
     return nil, err

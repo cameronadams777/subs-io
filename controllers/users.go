@@ -8,23 +8,16 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
-type UsersController struct {
-	DB *gorm.DB
-}
+type UsersController struct {}
 
 func (uc *UsersController) HandleUsersEdit(c echo.Context) error {
 	user_id := c.Get("user_id")
 
 	app_context := get_app_context(c)
 
-	user_service := services.UserService{
-		DB: uc.DB,
-	}
-
-	user, err := user_service.FindByID(user_id.(string))
+	user, err := services.FindUserByID(user_id.(string))
 
 	if err != nil {
 		return c.Redirect(302, "/error")
@@ -45,11 +38,7 @@ func (uc *UsersController) HandleUsersUpdate(c echo.Context) error {
 		}))
 	}
 
-	user_service := services.UserService{
-		DB: uc.DB,
-	}
-
-	_, err := user_service.Update(form)
+	_, err := services.UpdateUser(form)
 
 	if err != nil {
 		return render(c, components.FlashMessage(components.FlashMessageProps{

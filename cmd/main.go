@@ -16,7 +16,7 @@ import (
 func main() {
 	app := echo.New()
 
-  db := database.ConnectDB()
+  database.ConnectDB()
 
 	app.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "${time_rfc3339} ${method} ${uri} ${status}\n",
@@ -34,9 +34,7 @@ func main() {
   app.GET("/not_found", application_views_controller.HandleNotFoundIndex)
   app.GET("/", application_views_controller.HandleHomeIndex)
 
-  authentication_controller := controllers.AuthenticationController {
-    DB: db,
-  }
+  authentication_controller := controllers.AuthenticationController {}
   app.GET("/login", authentication_controller.HandleLoginIndex)
   app.POST("/auth/login", authentication_controller.HandleLoginCreate)
   app.GET("/register", authentication_controller.HandleRegisterIndex)
@@ -49,23 +47,18 @@ func main() {
 	app.Use(middleware_handlers.NoSessionRedirect)
 
   users := app.Group("/users")
-  users_controller := controllers.UsersController {
-    DB: db,
-  }
+  users_controller := controllers.UsersController {}
   users.GET("/edit", users_controller.HandleUsersEdit)
   users.PATCH("/update", users_controller.HandleUsersUpdate)
 
   subtitles := app.Group("/subtitles")
-  subtitles_controller := controllers.SubtitlesController{
-    DB: db,
-  }
+  subtitles_controller := controllers.SubtitlesController{}
   subtitles.POST("/create", subtitles_controller.HandleSubtitlesCreate)
 
-  posts := app.Group("/posts")
-  posts_controller := controllers.PostsController{
-    DB: db,
-  }
-  posts.GET("", posts_controller.HandlePostsIndex)
+  uploads := app.Group("/uploads")
+  uploads_controller := controllers.UploadsController{}
+  uploads.GET("", uploads_controller.HandleUploadsIndex)
+  uploads.GET("/:id", uploads_controller.HandleUploadsShow)
 
 	app.Logger.Fatal(app.Start(":4000"))
 }

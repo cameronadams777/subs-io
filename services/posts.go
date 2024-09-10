@@ -5,19 +5,10 @@ import (
 	"app/repositories"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
-type PostService struct {
-	DB *gorm.DB
-}
-
-func (ps *PostService) FindByID(id string) (*models.Post, error) {
-	post_repo := repositories.PostRepository{
-		DB: ps.DB,
-	}
-
-	post, err := post_repo.FindPost(repositories.FindPostParams{
+func FindPostByID(id string) (*models.Post, error) {
+	post, err := repositories.FindPost(repositories.FindPostParams{
 		ID: id,
 	})
 
@@ -28,12 +19,8 @@ func (ps *PostService) FindByID(id string) (*models.Post, error) {
 	return post, nil
 }
 
-func (ps *PostService) Find(params repositories.FindPostsParams) ([]models.Post, error) {
-	post_repo := repositories.PostRepository{
-		DB: ps.DB,
-	}
-
-	posts, err := post_repo.FindPosts(params)
+func FindPosts(params repositories.FindPostsParams) ([]models.Post, error) {
+	posts, err := repositories.FindPosts(params)
 
 	if err != nil {
 		return nil, err
@@ -49,11 +36,7 @@ type CreatePostParams struct {
 	Status string
 }
 
-func (ps *PostService) Create(params CreatePostParams) (*models.Post, error) {
-	post_repo := repositories.PostRepository{
-		DB: ps.DB,
-	}
-
+func CreatePost(params CreatePostParams) (*models.Post, error) {
 	user_id, err := uuid.Parse(params.UserID)
 
 	if err != nil {
@@ -67,13 +50,13 @@ func (ps *PostService) Create(params CreatePostParams) (*models.Post, error) {
 		UserID: user_id,
 	}
 
-	create_err := post_repo.CreatePost(new_post)
+	post, create_err := repositories.CreatePost(&new_post)
 
 	if create_err != nil {
 		return nil, err
 	}
 
-	return &new_post, nil
+	return post, nil
 }
 
 type UpdatePostParams struct {
@@ -81,21 +64,21 @@ type UpdatePostParams struct {
 	Title  string
 	Status string
 	URL    string
-	UserID string
+	UserID uuid.UUID
 }
 
-func (ps *PostService) Update(updates UpdatePostParams) (*models.Post, error) {
-	post_repo := repositories.PostRepository{
-		DB: ps.DB,
-	}
-
+func UpdatePost(updates UpdatePostParams) (*models.Post, error) {
 	updated_post := models.Post{
+    UUIDBaseModel: models.UUIDBaseModel{
+      ID: updates.ID,
+    },
 		Title:  updates.Title,
 		Status: updates.Status,
 		URL:    updates.URL,
+    UserID: updates.UserID,
 	}
 
-	post, err := post_repo.Update(updates.ID, updated_post)
+	post, err := repositories.UpdatePost(updates.ID, updated_post)
 
 	if err != nil {
 		return nil, err
@@ -108,18 +91,14 @@ type DeletePostParams struct {
 	ID string
 }
 
-func (ps *PostService) Delete(params DeletePostParams) error {
-	post_repo := repositories.PostRepository{
-		DB: ps.DB,
-	}
-
+func DeletePost(params DeletePostParams) error {
 	post_id, err := uuid.Parse(params.ID)
 
 	if err != nil {
 		return err
 	}
 
-	err = post_repo.Delete(post_id)
+	err = repositories.DeletePost(post_id)
 
 	if err != nil {
 		return err

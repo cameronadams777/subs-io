@@ -9,12 +9,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
-type AuthenticationController struct {
-	DB *gorm.DB
-}
+type AuthenticationController struct {}
 
 func (ac *AuthenticationController) HandleLoginIndex(c echo.Context) error {
 	return render(c, pages.LoginIndex(
@@ -39,10 +36,10 @@ func (ac *AuthenticationController) HandleLoginCreate(c echo.Context) error {
 		}))
 	}
 
-	auth_service := services.AuthService{
-		DB:  ac.DB,
-		CTX: c,
-	}
+  auth_service := services.AuthService{
+    CTX: c,
+  }
+
 	err := auth_service.Login(form.Email, form.Password)
 
 	if err != nil {
@@ -74,7 +71,6 @@ func (ac *AuthenticationController) HandleRegisterCreate(c echo.Context) error {
 	}
 
 	auth_service := services.AuthService{
-		DB:  ac.DB,
 		CTX: c,
 	}
 	err := auth_service.Register(form)
@@ -103,7 +99,6 @@ func (ac *AuthenticationController) HandleSendResetPasswordEmail(c echo.Context)
 
 func (ac *AuthenticationController) HandleLogout(c echo.Context) error {
 	auth_service := services.AuthService{
-		DB:  ac.DB,
 		CTX: c,
 	}
 

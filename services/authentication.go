@@ -10,19 +10,16 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 const SESSION_MAX_AGE = 86400 * 7
 
 type AuthService struct {
-	DB  *gorm.DB
 	CTX echo.Context
 }
 
 func (s *AuthService) Login(email string, password string) error {
-	user_repo := repositories.UserRepository{DB: s.DB}
-	user, err := user_repo.FindUser(repositories.FindUserParams{Email: email})
+	user, err := repositories.FindUser(repositories.FindUserParams{Email: email})
 
 	if err != nil {
 		return err
@@ -65,8 +62,6 @@ type RegisterDTO struct {
 }
 
 func (s *AuthService) Register(params RegisterDTO) error {
-	user_repo := repositories.UserRepository{DB: s.DB}
-
 	if params.Password != params.ConfirmPassword {
 		return errors.New("Passwords do not match")
 	}
@@ -84,7 +79,7 @@ func (s *AuthService) Register(params RegisterDTO) error {
 		Password:  string(hashed_password),
 	}
 
-	err := user_repo.CreateUser(user)
+	err := repositories.CreateUser(user)
 
 	if err != nil {
 		return err

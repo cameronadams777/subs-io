@@ -8,7 +8,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func ConnectDB() *gorm.DB {
+var DB *gorm.DB
+
+func ConnectDB() {
 	host := app.GetConfig("DB_HOST")
 	user := app.GetConfig("DB_USER")
 	password := app.GetConfig("DB_PASSWORD")
@@ -25,5 +27,5 @@ func ConnectDB() *gorm.DB {
 
 	fmt.Println("Connection Opened to Database")
 
-  return database
+  DB = database
 }

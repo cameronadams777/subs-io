@@ -13,12 +13,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
-type SubtitlesController struct {
-	DB *gorm.DB
-}
+type SubtitlesController struct {}
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 1024
 
@@ -43,7 +40,7 @@ func output_command_logs(cmd *exec.Cmd) {
 	}
 }
 
-func generate_subtitles(db *gorm.DB, post_id uuid.UUID, file_path string) {
+func generate_subtitles(post_id uuid.UUID, file_path string) {
 	whisper_command := "whisperx " + file_path + ".mp4 --model medium.en --output_dir ./uploads --align_model WAV2VEC2_ASR_LARGE_LV60K_960H --batch_size 4 --compute_type float32"
 	whisper_command_arr := strings.Split(whisper_command, " ")
 	whisper_exec := exec.Command(whisper_command_arr[0], whisper_command_arr[1:]...)
@@ -54,14 +51,10 @@ func generate_subtitles(db *gorm.DB, post_id uuid.UUID, file_path string) {
 	ffmpeg_exec := exec.Command(ffmpeg_command_arr[0], ffmpeg_command_arr[1:]...)
 	output_command_logs(ffmpeg_exec)
 
-	posts_service := services.PostService{
-		DB: db,
-	}
-
-  _, err := posts_service.Update(services.UpdatePostParams{
+  _, err := services.UpdatePost(services.UpdatePostParams{
     ID: post_id,
     URL: file_path + "_subbed.mp4",
-    Status: "completed",
+    Status: "complete",
   })
 
   if err != nil {
@@ -118,11 +111,7 @@ func (sc *SubtitlesController) HandleSubtitlesCreate(c echo.Context) error {
 
 	title := strings.Split(file_name, ".")[0]
 
-	posts_service := services.PostService{
-		DB: sc.DB,
-	}
-
-  new_post, err := posts_service.Create(services.CreatePostParams{
+  new_post, err := services.CreatePost(services.CreatePostParams{
 		Title:  title,
 		UserID: user_id.(string),
 		Status: "processing",
@@ -136,7 +125,7 @@ func (sc *SubtitlesController) HandleSubtitlesCreate(c echo.Context) error {
 
 	path := "uploads/" + title
 
-	go generate_subtitles(sc.DB, new_post.ID, path)
+	go generate_subtitles(new_post.ID, path)
 
 	c.Response().Header().Set("HX-Location", "/posts")
 	return c.String(http.StatusOK, "")
