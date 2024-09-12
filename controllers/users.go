@@ -8,9 +8,10 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-type UsersController struct {}
+type UsersController struct{}
 
 func (uc *UsersController) HandleUsersEdit(c echo.Context) error {
 	user_id := c.Get("user_id")
@@ -24,7 +25,7 @@ func (uc *UsersController) HandleUsersEdit(c echo.Context) error {
 	}
 
 	return render_with_context(c, user_pages.UserEdit(user_pages.UserEditPageProps{
-		Token: "",
+		Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
 		User:  *user,
 	}), app_context)
 }

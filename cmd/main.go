@@ -22,6 +22,9 @@ func main() {
 		Format: "${time_rfc3339} ${method} ${uri} ${status}\n",
 	}))
 	app.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
+  app.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+    TokenLookup: "form:_csrf",
+  }))
 
 	app.GET("/health", func(c echo.Context) error {
 		return c.String(http.StatusOK, "healthy!")

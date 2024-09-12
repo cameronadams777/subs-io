@@ -9,14 +9,15 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-type AuthenticationController struct {}
+type AuthenticationController struct{}
 
 func (ac *AuthenticationController) HandleLoginIndex(c echo.Context) error {
 	return render(c, pages.LoginIndex(
 		pages.LoginIndexPageProps{
-			Token: "",
+			Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
 		},
 	))
 }
@@ -36,9 +37,9 @@ func (ac *AuthenticationController) HandleLoginCreate(c echo.Context) error {
 		}))
 	}
 
-  auth_service := services.AuthService{
-    CTX: c,
-  }
+	auth_service := services.AuthService{
+		CTX: c,
+	}
 
 	err := auth_service.Login(form.Email, form.Password)
 
@@ -56,7 +57,7 @@ func (ac *AuthenticationController) HandleLoginCreate(c echo.Context) error {
 func (ac *AuthenticationController) HandleRegisterIndex(c echo.Context) error {
 	return render(c, pages.RegisterIndex(
 		pages.RegisterIndexPageProps{
-			Token: "",
+			Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
 		},
 	))
 }
@@ -88,8 +89,8 @@ func (ac *AuthenticationController) HandleRegisterCreate(c echo.Context) error {
 func (ac *AuthenticationController) HandleForgotPasswordIndex(c echo.Context) error {
 	return render(c, pages.ForgotPasswordIndex(
 		pages.ForgotPasswordIndexPageProps{
-			Token: "",
-    },
+			Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
+		},
 	))
 }
 
