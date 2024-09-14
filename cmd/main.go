@@ -55,36 +55,10 @@ func main() {
     tiktok.New(config.GetConfig("TIKTOK_CLIENT_ID"), config.GetConfig("TIKTOK_CLIENT_SECRET"), "http://localhost:4000/auth/tiktok/callback"),
 	)
 
-	app.GET("/auth/:provider/callback", func(c echo.Context) error {
-		ctx := context.WithValue(c.Request().Context(), gothic.ProviderParamKey, c.Param("provider"))
-
-		_, err := gothic.CompleteUserAuth(c.Response(), c.Request().WithContext(ctx))
-		if err != nil {
-			return err
-		}
-
-    return c.Redirect(http.StatusPermanentRedirect, "/")
-	})
-
-	app.GET("/logout/:provider", func(c echo.Context) error {
-		ctx := context.WithValue(c.Request().Context(), gothic.ProviderParamKey, c.Param("provider"))
-
-		gothic.Logout(c.Response(), c.Request().WithContext(ctx))
-		return c.Redirect(http.StatusPermanentRedirect, "/")
-	})
-
-	app.GET("/auth/:provider", func(c echo.Context) error {
-		ctx := context.WithValue(c.Request().Context(), gothic.ProviderParamKey, c.Param("provider"))
-
-		// try to get the user without re-authenticating
-		if _, err := gothic.CompleteUserAuth(c.Response(), c.Request().WithContext(ctx)); err == nil {
-      return c.Redirect(http.StatusPermanentRedirect, "/")
-		}
-
-		gothic.BeginAuthHandler(c.Response(), c.Request().WithContext(ctx))
-
-		return nil
-	})
+  oauth_controller := controllers.OAuthController{}
+	app.GET("/auth/:provider/callback", oauth_controller.HandleOAuthCallback)
+	app.GET("/logout/:provider", oauth_controller.HandleOAuthLogout)
+	app.GET("/auth/:provider", oauth_controller.HandleOAuthIndex)
 
 	app.Use(middleware_handlers.SetSessionInContext)
 	app.Use(middleware_handlers.NoSessionRedirect)
