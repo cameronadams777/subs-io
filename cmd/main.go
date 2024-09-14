@@ -6,8 +6,6 @@ import (
 	"app/database"
 	middleware_handlers "app/middleware"
 	"context"
-	"fmt"
-	"html/template"
 
 	"net/http"
 
