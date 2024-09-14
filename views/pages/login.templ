@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"app/views/components"
 	"app/views/layouts"
 )
 
@@ -12,49 +11,9 @@ type LoginIndexPageProps struct {
 
 templ LoginIndex(props LoginIndexPageProps) {
 	@layouts.BaseLayout(layouts.BaseLayoutProps{}) {
-		<div class="p-4 w-full h-full bg-indigo-500 flex justify-center items-center">
-			<form hx-post="/auth/login" hx-target="#flash-message" class="w-full lg:w-1/4 p-8 bg-white rounded-lg">
-				@components.Input(components.InputProps{
-					ID:    "_csrf",
-					Name:  "_csrf",
-					Type:  "hidden",
-					Value: props.Token,
-				})
-				<h1 class="mb-8 text-xl font-bold text-center">Welcome back!</h1>
-				@components.Input(components.InputProps{
-          ID: "email",
-          Class: "mb-4",
-          Label: "Email",
-          Name: "email",
-          Type: "email",
-        })
-				@components.Input(components.InputProps{
-          ID: "password",
-          Class: "mb-4",
-          Label: "Password",
-          Name: "password",
-          Type: "password",
-        })
-				<div class="flex justify-end mb-4">
-					<a
-            href="/forgot-password"
-            class="text-indigo-500 hover:underline"
-          >
-            Forgot password?
-          </a>
-				</div>
-				@components.Button(components.ButtonProps{
-          Class: "mb-4",
-          Color: "primary",
-          Text: "Sign In",
-          Type: "submit",
-        })
-				<div class="flex justify-center">
-					<a href="/register" class="text-indigo-500 hover:underline">
-            Don't have an account? Sign up.
-          </a>
-				</div>
-			</form>
+		<div class="p-4 w-full h-full bg-indigo-500 flex flex-col justify-center items-center">
+      <a href="/auth/google" class="bg-white hover:bg-gray-500 px-4 py-2 rounded-lg mb-4">Login with Google</a>
+      <a href="/auth/tiktok" class="bg-white hover:bg-gray-500 px-4 py-2 rounded-lg">Login with TikTok</a>
 		</div>
 	}
 }
