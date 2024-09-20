@@ -5,7 +5,6 @@ import (
 	"app/controllers"
 	"app/database"
 	middleware_handlers "app/middleware"
-	"context"
 
 	"net/http"
 

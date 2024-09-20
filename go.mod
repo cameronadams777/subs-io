@@ -6,7 +6,7 @@ toolchain go1.23.0
 
 require (
 	cloud.google.com/go/compute/metadata v0.5.1 // indirect
-	github.com/a-h/templ v0.2.747 // indirect
+	github.com/a-h/templ v0.2.778 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
