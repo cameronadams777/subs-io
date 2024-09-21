@@ -6,8 +6,6 @@ import (
 	"app/database"
 	middleware_handlers "app/middleware"
 
-	"encoding/json"
-	"os"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -86,14 +84,6 @@ func main() {
 	uploads_controller := controllers.UploadsController{}
 	uploads.GET("", uploads_controller.HandleUploadsIndex)
 	uploads.GET("/:id", uploads_controller.HandleUploadsShow)
-
-  data, err := json.MarshalIndent(app.Routes(), "", "  ")
-
-  if err != nil {
-    panic(err)
-  }
-
-  os.WriteFile("routes.json", data, 0644)
 
 	app.Logger.Fatal(app.Start(":4000"))
 }
