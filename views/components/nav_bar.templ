@@ -3,9 +3,9 @@ package components
 import "app/views"
 
 templ NavBar() {
-  <nav class="px-8 py-4 flex justify-between items-center border-b border-gray-300">
+  <nav class="px-8 py-4 flex justify-between items-center border-b border-gray-300 dark:border-none">
     <a href="/">
-      <h1 class="text-2xl font-bold">Subs.io</h1>
+      @Header(HeaderProps{ Tag: "h1" }) { Subs.io }
     </a>
     @nav_actions()
   </nav>
@@ -28,7 +28,7 @@ templ nav_actions() {
     </div>
   } else {
     <div>
-      <a href="/login" class="mr-2 hover:underline font-bold">Login</a>
+      <a href="/login" class="mr-2 hover:underline font-bold">@Text(TextProps{Tag: "span" }){ Login }</a>
     </div>
   }
 }

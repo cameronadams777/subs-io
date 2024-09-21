@@ -1,0 +1,28 @@
+package components
+
+type HeaderProps struct {
+	Tag   string
+	Class string
+}
+
+templ Header(props HeaderProps) {
+	if props.Tag == "h1" {
+		<h1 class={ "font-black text-2xl text-gray-900 dark:text-white " + props.Class }>{ children... }
+</h1>
+	} else if props.Tag == "h2" {
+		<h2 class={ "font-bold text-2xl text-gray-900 dark:text-white " + props.Class }>{ children... }
+</h2>
+	} else if props.Tag == "h3" {
+		<h3 class={ "font-bold text-lg text-gray-900 dark:text-white " + props.Class }>{ children... }
+</h3>
+	} else if props.Tag == "h4" {
+		<h4 class={ "text-lg text-gray-900 dark:text-white " + props.Class }>{ children... }
+</h4>
+	} else if props.Tag == "h5" {
+		<h5 class={ "text-md text-gray-900 dark:text-white " + props.Class }>{ children... }
+</h5>
+	} else {
+		<h1 class={ "font-black text-2xl text-gray-900 dark:text-white " + props.Class }>{ children... }
+</h1>
+	}
+}

@@ -4,6 +4,7 @@ import (
 	"app/models"
 	"app/views/layouts"
 	"strings"
+	"app/views/components"
 )
 
 type UploadShowPageProps struct {
@@ -13,7 +14,9 @@ type UploadShowPageProps struct {
 templ UploadShow(props UploadShowPageProps) {
 	@layouts.AppLayout() {
 		<div class="p-4 w-full container mx-auto">
-			<h1 class="text-2xl font-bold mb-8">{ strings.Title(props.Upload.Title) }</h1>
+      @components.Header(components.HeaderProps{ Tag: "h2", Class: "text-2xl mb-8"}) {
+        { strings.Title(props.Upload.Title) }
+      }
 			<video class="w-full" controls>
 				<source src={ props.Upload.URL } type="video/mp4"/>
 				Your browser does not support the video tag.

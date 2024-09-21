@@ -1,0 +1,19 @@
+package components
+
+type TextProps struct {
+	Tag   string
+	Class string
+}
+
+templ Text(props TextProps) {
+	if props.Tag == "p" {
+		<p class={ "text-gray-900 dark:text-white " + props.Class }>{ children... }
+</p>
+	} else if props.Tag == "span" {
+		<span class={ "text-gray-900 dark:text-white " + props.Class }>{ children... }
+</span>
+	} else {
+		<p class={ "text-gray-900 dark:text-white " + props.Class }>{ children... }
+</p>
+	}
+}

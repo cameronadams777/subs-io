@@ -1,6 +1,9 @@
 package pages
 
-import "app/views/layouts"
+import (
+	"app/views/components"
+	"app/views/layouts"
+)
 
 type HomePageProps struct {
 	Token string
@@ -14,16 +17,20 @@ templ HomeIndex(props HomePageProps) {
 				hx-post="/subtitles/create"
 				hx-encoding="multipart/form-data"
 				hx-target="#flash-message"
-        hx-swap="outerHTML"
+				hx-swap="outerHTML"
 				hx-trigger="input change"
 				class="flex flex-col justify-center items-center"
 			>
 				<input type="hidden" id="_csrf" name="_csrf" value={ props.Token }/>
-				<h1 class="text-4xl font-bold mb-2">Welcome to Subs.io</h1>
-				<p class="text-center text-lg mb-4">Upload a video and we'll generate subtitles for you</p>
+				@components.Header(components.HeaderProps{Tag: "h2", Class: "text-4xl mb-2"}) {
+					Welcome to Subs.io
+				}
+				@components.Text(components.TextProps{Tag: "p", Class: "text-center text-lg mb-4"}) {
+					Upload a video and we'll generate subtitles for you
+				}
 				<button
 					class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-          hx-disabled-elt="this"
+					hx-disabled-elt="this"
 					onclick="document.getElementById('video').click()"
 					type="button"
 				>
