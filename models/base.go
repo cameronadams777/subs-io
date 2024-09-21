@@ -13,9 +13,3 @@ type UUIDBaseModel struct {
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deletedAt"`
 }
-
-func (base *UUIDBaseModel) BeforeCreate(tx *gorm.DB) error {
-	uuid := uuid.NewString()
-	tx.Statement.SetColumn("ID", uuid)
-	return nil
-}

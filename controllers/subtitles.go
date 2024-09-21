@@ -51,7 +51,7 @@ func generate_subtitles(post_id uuid.UUID, file_path string) {
 	ffmpeg_exec := exec.Command(ffmpeg_command_arr[0], ffmpeg_command_arr[1:]...)
 	output_command_logs(ffmpeg_exec)
 
-  _, err := services.UpdatePost(services.UpdatePostParams{
+  _, err := services.UpdateUpload(services.UpdateUploadParams{
     ID: post_id,
     URL: file_path + "_subbed.mp4",
     Status: "complete",
@@ -111,7 +111,7 @@ func (sc *SubtitlesController) HandleSubtitlesCreate(c echo.Context) error {
 
 	title := strings.Split(file_name, ".")[0]
 
-  new_post, err := services.CreatePost(services.CreatePostParams{
+  new_post, err := services.CreateUpload(services.CreateUploadParams{
 		Title:  title,
 		UserID: user_id.(string),
 		Status: "processing",

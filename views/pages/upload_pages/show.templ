@@ -6,16 +6,16 @@ import (
 	"strings"
 )
 
-type PostShowPageProps struct {
-	Post models.Post
+type UploadShowPageProps struct {
+	Upload models.Upload
 }
 
-templ PostShow(props PostShowPageProps) {
+templ UploadShow(props UploadShowPageProps) {
 	@layouts.AppLayout() {
 		<div class="p-4 w-full container mx-auto">
-			<h1 class="text-2xl font-bold mb-8">{ strings.Title(props.Post.Title) }</h1>
+			<h1 class="text-2xl font-bold mb-8">{ strings.Title(props.Upload.Title) }</h1>
 			<video class="w-full" controls>
-				<source src={ props.Post.URL } type="video/mp4"/>
+				<source src={ props.Upload.URL } type="video/mp4"/>
 				Your browser does not support the video tag.
 			</video>
 			<div class="flex space-x-4">

@@ -7,12 +7,12 @@ import (
 	"github.com/google/uuid"
 )
 
-type FindPostParams struct {
+type FindUploadParams struct {
 	ID string
 }
 
-func FindPost(params FindPostParams) (*models.Post, error) {
-	var post models.Post
+func FindUpload(params FindUploadParams) (*models.Upload, error) {
+	var post models.Upload
 
 	tx := database.DB
 
@@ -29,12 +29,12 @@ func FindPost(params FindPostParams) (*models.Post, error) {
 	return &post, nil
 }
 
-type FindPostsParams struct {
+type FindUploadsParams struct {
 	UserID string
 }
 
-func FindPosts(params FindPostsParams) ([]models.Post, error) {
-	var posts []models.Post
+func FindUploads(params FindUploadsParams) ([]models.Upload, error) {
+	var posts []models.Upload
 
 	tx := database.DB
 
@@ -51,7 +51,7 @@ func FindPosts(params FindPostsParams) ([]models.Post, error) {
 	return posts, nil
 }
 
-func CreatePost(post *models.Post) (*models.Post, error) {
+func CreateUpload(post *models.Upload) (*models.Upload, error) {
 	err := database.DB.Create(&post).Error
 
 	if err != nil {
@@ -61,8 +61,8 @@ func CreatePost(post *models.Post) (*models.Post, error) {
 	return post, nil
 }
 
-func UpdatePost(id uuid.UUID, updated_post models.Post) (*models.Post, error) {
-	var post_to_update models.Post
+func UpdateUpload(id uuid.UUID, updated_post models.Upload) (*models.Upload, error) {
+	var post_to_update models.Upload
 	err := database.DB.First(&post_to_update, id).Error
 
 	if err != nil {
@@ -74,8 +74,8 @@ func UpdatePost(id uuid.UUID, updated_post models.Post) (*models.Post, error) {
 	return &post_to_update, nil
 }
 
-func DeletePost(id uuid.UUID) error {
-	var post_to_delete models.Post
+func DeleteUpload(id uuid.UUID) error {
+	var post_to_delete models.Upload
 	err := database.DB.First(&post_to_delete, id).Error
 
 	if err != nil {

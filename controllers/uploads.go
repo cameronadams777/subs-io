@@ -18,7 +18,7 @@ func (uc *UploadsController) HandleUploadsIndex(c echo.Context) error {
 		user_id = c.Get("uid").(string)
 	}
 
-	posts, err := services.FindPosts(repositories.FindPostsParams{
+	posts, err := services.FindUploads(repositories.FindUploadsParams{
 		UserID: user_id.(string),
 	})
 
@@ -34,8 +34,8 @@ func (uc *UploadsController) HandleUploadsIndex(c echo.Context) error {
 	}
 	return render_with_context(
 		c,
-		upload_pages.PostIndex(upload_pages.PostIndexPageProps{
-			Posts: posts,
+		upload_pages.UploadIndex(upload_pages.UploadIndexPageProps{
+			Uploads: posts,
 		}),
 		app_context,
 	)
@@ -49,7 +49,7 @@ func (uc *UploadsController) HandleUploadsShow(c echo.Context) error {
 		user_id = c.Get("uid").(string)
 	}
 
-	post, err := services.FindPostByID(post_id)
+	post, err := services.FindUploadByID(post_id)
 
 	if err != nil {
 		return c.Redirect(302, "/error")
@@ -63,8 +63,8 @@ func (uc *UploadsController) HandleUploadsShow(c echo.Context) error {
 	}
 	return render_with_context(
 		c,
-		upload_pages.PostShow(upload_pages.PostShowPageProps{
-			Post: *post,
+		upload_pages.UploadShow(upload_pages.UploadShowPageProps{
+			Upload: *post,
 		}),
 		app_context,
 	)

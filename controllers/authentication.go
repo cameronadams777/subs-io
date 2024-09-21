@@ -1,9 +1,7 @@
 package controllers
 
 import (
-	"app/services"
 	"app/views/pages"
-	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -19,12 +17,3 @@ func (ac *AuthenticationController) HandleLoginIndex(c echo.Context) error {
 	))
 }
 
-func (ac *AuthenticationController) HandleLogout(c echo.Context) error {
-	auth_service := services.AuthService{
-		CTX: c,
-	}
-
-	auth_service.SignOut()
-
-	return c.Redirect(http.StatusPermanentRedirect, "/login")
-}

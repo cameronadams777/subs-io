@@ -11,7 +11,7 @@ import (
 
 func NoSessionRedirect(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-    no_session_paths := []string{"/", "/login", "/auth/login", "/auth/:provider", "/auth/:provider/callback", "/logout/:provider", "/not_found", "/error"}
+    no_session_paths := []string{"/", "/login", "/auth/login", "/auth/:provider", "/auth/:provider/callback", "/logout/:provider", "/subtitles/create", "/not_found", "/error"}
 
 		if strings.Contains(c.Path(), "/assets") || slices.Contains(no_session_paths, c.Path()) {
 			return next(c)

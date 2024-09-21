@@ -11,9 +11,14 @@ import (
 type OAuthController struct{}
 
 func (oac OAuthController) HandleOAuthCallback(c echo.Context) error {
-	ctx := context.WithValue(c.Request().Context(), gothic.ProviderParamKey, c.Param("provider"))
+	ctx := context.WithValue(
+    c.Request().Context(),
+    gothic.ProviderParamKey,
+    c.Param("provider"),
+  )
 
-	_, err := gothic.CompleteUserAuth(c.Response(), c.Request().WithContext(ctx))
+  _, err := gothic.CompleteUserAuth(c.Response(), c.Request().WithContext(ctx))
+
 	if err != nil {
 		return err
 	}

@@ -2,7 +2,7 @@ package models
 
 import "github.com/google/uuid"
 
-type Post struct {
+type Upload struct {
 	UUIDBaseModel
   Title string `json:"title"`
   Status string `json:"status"`

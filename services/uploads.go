@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func FindPostByID(id string) (*models.Post, error) {
-	post, err := repositories.FindPost(repositories.FindPostParams{
+func FindUploadByID(id string) (*models.Upload, error) {
+	post, err := repositories.FindUpload(repositories.FindUploadParams{
 		ID: id,
 	})
 
@@ -19,8 +19,8 @@ func FindPostByID(id string) (*models.Post, error) {
 	return post, nil
 }
 
-func FindPosts(params repositories.FindPostsParams) ([]models.Post, error) {
-	posts, err := repositories.FindPosts(params)
+func FindUploads(params repositories.FindUploadsParams) ([]models.Upload, error) {
+	posts, err := repositories.FindUploads(params)
 
 	if err != nil {
 		return nil, err
@@ -29,28 +29,28 @@ func FindPosts(params repositories.FindPostsParams) ([]models.Post, error) {
 	return posts, nil
 }
 
-type CreatePostParams struct {
+type CreateUploadParams struct {
 	Title  string
 	UserID string
 	URL    string
 	Status string
 }
 
-func CreatePost(params CreatePostParams) (*models.Post, error) {
+func CreateUpload(params CreateUploadParams) (*models.Upload, error) {
 	user_id, err := uuid.Parse(params.UserID)
 
 	if err != nil {
 		return nil, err
 	}
 
-	new_post := models.Post{
+	new_post := models.Upload{
 		Title:  params.Title,
 		Status: params.Status,
 		URL:    params.URL,
 		UserID: user_id,
 	}
 
-	post, create_err := repositories.CreatePost(&new_post)
+	post, create_err := repositories.CreateUpload(&new_post)
 
 	if create_err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func CreatePost(params CreatePostParams) (*models.Post, error) {
 	return post, nil
 }
 
-type UpdatePostParams struct {
+type UpdateUploadParams struct {
 	ID    uuid.UUID
 	Title  string
 	Status string
@@ -67,8 +67,8 @@ type UpdatePostParams struct {
 	UserID uuid.UUID
 }
 
-func UpdatePost(updates UpdatePostParams) (*models.Post, error) {
-	updated_post := models.Post{
+func UpdateUpload(updates UpdateUploadParams) (*models.Upload, error) {
+	updated_post := models.Upload{
     UUIDBaseModel: models.UUIDBaseModel{
       ID: updates.ID,
     },
@@ -78,7 +78,7 @@ func UpdatePost(updates UpdatePostParams) (*models.Post, error) {
     UserID: updates.UserID,
 	}
 
-	post, err := repositories.UpdatePost(updates.ID, updated_post)
+	post, err := repositories.UpdateUpload(updates.ID, updated_post)
 
 	if err != nil {
 		return nil, err
@@ -87,18 +87,18 @@ func UpdatePost(updates UpdatePostParams) (*models.Post, error) {
 	return post, nil
 }
 
-type DeletePostParams struct {
+type DeleteUploadParams struct {
 	ID string
 }
 
-func DeletePost(params DeletePostParams) error {
+func DeleteUpload(params DeleteUploadParams) error {
 	post_id, err := uuid.Parse(params.ID)
 
 	if err != nil {
 		return err
 	}
 
-	err = repositories.DeletePost(post_id)
+	err = repositories.DeleteUpload(post_id)
 
 	if err != nil {
 		return err
