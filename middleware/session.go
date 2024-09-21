@@ -11,7 +11,8 @@ import (
 
 func NoSessionRedirect(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		no_session_paths := []string{"/", "/login", "/auth/login", "/register", "/auth/register", "/not_found", "/error"}
+    no_session_paths := []string{"/", "/login", "/auth/login", "/auth/:provider", "/auth/:provider/callback", "/logout/:provider", "/not_found", "/error"}
+
 		if strings.Contains(c.Path(), "/assets") || slices.Contains(no_session_paths, c.Path()) {
 			return next(c)
 		}
@@ -37,10 +38,10 @@ func SetSessionInContext(next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 
-    c.Get("user_id")
+		c.Get("user_id")
 
-    c.Set("user_id", sess.Values["id"])
+		c.Set("user_id", sess.Values["id"])
 
-    return next(c)
+		return next(c)
 	}
 }

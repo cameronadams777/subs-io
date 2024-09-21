@@ -6,16 +6,18 @@ import (
 	"app/database"
 	middleware_handlers "app/middleware"
 
+	"encoding/json"
+	"os"
 	"net/http"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
-  "github.com/labstack/echo/v4"
-  "github.com/labstack/echo/v4/middleware"
-  "github.com/markbates/goth"
-  "github.com/markbates/goth/gothic"
-  "github.com/markbates/goth/providers/tiktok"
-  "github.com/markbates/goth/providers/google"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
+	"github.com/markbates/goth/providers/google"
+	"github.com/markbates/goth/providers/tiktok"
 )
 
 func main() {
@@ -26,7 +28,10 @@ func main() {
 	app.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "${time_rfc3339} ${method} ${uri} ${status}\n",
 	}))
-	app.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
+
+	store := sessions.NewCookieStore([]byte(config.GetConfig("SESSION_SECRET")))
+
+	app.Use(session.Middleware(store))
 	app.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		TokenLookup: "form:_csrf",
 	}))
@@ -45,19 +50,25 @@ func main() {
 	authentication_controller := controllers.AuthenticationController{}
 	app.GET("/login", authentication_controller.HandleLoginIndex)
 
-	store := sessions.NewCookieStore([]byte("secret"))
-
 	gothic.Store = store
 
 	goth.UseProviders(
-		google.New(config.GetConfig("GOOGLE_CLIENT_ID"), config.GetConfig("GOOGLE_CLIENT_SECRET"), "http://localhost:4000/auth/google/callback"),
-    tiktok.New(config.GetConfig("TIKTOK_CLIENT_ID"), config.GetConfig("TIKTOK_CLIENT_SECRET"), "http://localhost:4000/auth/tiktok/callback"),
+		google.New(
+      config.GetConfig("GOOGLE_CLIENT_ID"),
+      config.GetConfig("GOOGLE_CLIENT_SECRET"),
+      "http://localhost:4000/auth/google/callback",
+    ),
+    tiktok.New(
+      config.GetConfig("TIKTOK_CLIENT_ID"),
+      config.GetConfig("TIKTOK_CLIENT_SECRET"),
+      "http://localhost:4000/auth/tiktok/callback",
+    ),
 	)
 
   oauth_controller := controllers.OAuthController{}
 	app.GET("/auth/:provider/callback", oauth_controller.HandleOAuthCallback)
 	app.GET("/logout/:provider", oauth_controller.HandleOAuthLogout)
-	app.GET("/auth/:provider", oauth_controller.HandleOAuthIndex)
+  app.GET("/auth/:provider", oauth_controller.HandleOAuthIndex)
 
 	app.Use(middleware_handlers.SetSessionInContext)
 	app.Use(middleware_handlers.NoSessionRedirect)
@@ -75,6 +86,14 @@ func main() {
 	uploads_controller := controllers.UploadsController{}
 	uploads.GET("", uploads_controller.HandleUploadsIndex)
 	uploads.GET("/:id", uploads_controller.HandleUploadsShow)
+
+  data, err := json.MarshalIndent(app.Routes(), "", "  ")
+
+  if err != nil {
+    panic(err)
+  }
+
+  os.WriteFile("routes.json", data, 0644)
 
 	app.Logger.Fatal(app.Start(":4000"))
 }

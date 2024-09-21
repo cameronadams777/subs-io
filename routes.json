@@ -1,0 +1,72 @@
+[
+  {
+    "method": "GET",
+    "path": "/login",
+    "name": "app/controllers.(*AuthenticationController).HandleLoginIndex-fm"
+  },
+  {
+    "method": "GET",
+    "path": "/logout/:provider",
+    "name": "app/controllers.OAuthController.HandleOAuthLogout-fm"
+  },
+  {
+    "method": "GET",
+    "path": "/assets*",
+    "name": "github.com/labstack/echo/v4.(*Echo).Static.StaticDirectoryHandler.func1"
+  },
+  {
+    "method": "POST",
+    "path": "/subtitles/create",
+    "name": "app/controllers.(*SubtitlesController).HandleSubtitlesCreate-fm"
+  },
+  {
+    "method": "GET",
+    "path": "/",
+    "name": "app/controllers.(*ApplicationViewHandler).HandleHomeIndex-fm"
+  },
+  {
+    "method": "GET",
+    "path": "/auth/:provider/callback",
+    "name": "app/controllers.OAuthController.HandleOAuthCallback-fm"
+  },
+  {
+    "method": "GET",
+    "path": "/users/edit",
+    "name": "app/controllers.(*UsersController).HandleUsersEdit-fm"
+  },
+  {
+    "method": "GET",
+    "path": "/health",
+    "name": "main.main.func1"
+  },
+  {
+    "method": "GET",
+    "path": "/not_found",
+    "name": "app/controllers.(*ApplicationViewHandler).HandleNotFoundIndex-fm"
+  },
+  {
+    "method": "GET",
+    "path": "/auth/:provider",
+    "name": "app/controllers.OAuthController.HandleOAuthIndex-fm"
+  },
+  {
+    "method": "PATCH",
+    "path": "/users/update",
+    "name": "app/controllers.(*UsersController).HandleUsersUpdate-fm"
+  },
+  {
+    "method": "GET",
+    "path": "/uploads",
+    "name": "app/controllers.(*UploadsController).HandleUploadsIndex-fm"
+  },
+  {
+    "method": "GET",
+    "path": "/uploads/:id",
+    "name": "app/controllers.(*UploadsController).HandleUploadsShow-fm"
+  },
+  {
+    "method": "GET",
+    "path": "/error",
+    "name": "app/controllers.(*ApplicationViewHandler).HandleErrorIndex-fm"
+  }
+]
