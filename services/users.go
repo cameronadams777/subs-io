@@ -19,6 +19,18 @@ func FindUserByID(id string) (*models.User, error) {
   return user, nil
 }
 
+func FindUserByEmail(email string) (*models.User, error) {
+  user, err := repositories.FindUser(repositories.FindUserParams{
+    Email: email,
+  })
+
+  if err != nil {
+    return nil, err
+  }
+
+  return user, nil
+}
+
 type UpdateUserParams struct {
   ID string `form:"id"`
   FirstName string `form:"first_name"`

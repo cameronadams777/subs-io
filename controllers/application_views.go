@@ -6,21 +6,51 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
 )
 
 type ApplicationViewHandler struct{}
 
 func (av *ApplicationViewHandler) HandleHomeIndex(c echo.Context) error {
-	user_id := c.Get("user_id")
+	session, err := gothic.Store.Get(c.Request(), "subs_io_session")
+	if err != nil {
+		app_context := structs.AppContext{
+			Key: "session",
+			Value: structs.SessionContext{
+				UserID: "",
+			},
+		}
+		return render_with_context(
+			c,
+			pages.HomeIndex(pages.HomePageProps{
+				Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
+			}),
+			app_context,
+		)
+	}
 
-	if user_id == nil {
-		user_id = ""
+	u := session.Values["user"]
+	if u == nil {
+		app_context := structs.AppContext{
+			Key: "session",
+			Value: structs.SessionContext{
+				UserID: "",
+			},
+		}
+		return render_with_context(
+			c,
+			pages.HomeIndex(pages.HomePageProps{
+				Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
+			}),
+			app_context,
+		)
 	}
 
 	app_context := structs.AppContext{
 		Key: "session",
 		Value: structs.SessionContext{
-			UserID: user_id.(string),
+			UserID: (u.(goth.User)).UserID,
 		},
 	}
 	return render_with_context(

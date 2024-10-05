@@ -4,7 +4,7 @@ import (
 	config "app"
 	"app/controllers"
 	"app/database"
-	middleware_handlers "app/middleware"
+	"app/services"
 
 	"net/http"
 
@@ -12,10 +12,6 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/gothic"
-	"github.com/markbates/goth/providers/google"
-	"github.com/markbates/goth/providers/tiktok"
 )
 
 func main() {
@@ -34,6 +30,8 @@ func main() {
 		TokenLookup: "form:_csrf",
 	}))
 
+  auth_service := services.NewAuthService(store)
+
 	app.GET("/health", func(c echo.Context) error {
 		return c.String(http.StatusOK, "healthy!")
 	})
@@ -48,33 +46,18 @@ func main() {
 	authentication_controller := controllers.AuthenticationController{}
 	app.GET("/login", authentication_controller.HandleLoginIndex)
 
-	gothic.Store = store
-
-	goth.UseProviders(
-		google.New(
-      config.GetConfig("GOOGLE_CLIENT_ID"),
-      config.GetConfig("GOOGLE_CLIENT_SECRET"),
-      "http://localhost:4000/auth/google/callback",
-    ),
-    tiktok.New(
-      config.GetConfig("TIKTOK_CLIENT_ID"),
-      config.GetConfig("TIKTOK_CLIENT_SECRET"),
-      "http://localhost:4000/auth/tiktok/callback",
-    ),
-	)
 
   oauth_controller := controllers.OAuthController{}
 	app.GET("/auth/:provider/callback", oauth_controller.HandleOAuthCallback)
 	app.GET("/logout/:provider", oauth_controller.HandleOAuthLogout)
   app.GET("/auth/:provider", oauth_controller.HandleOAuthIndex)
 
-	app.Use(middleware_handlers.SetSessionInContext)
-	app.Use(middleware_handlers.NoSessionRedirect)
-
 	users := app.Group("/users")
-	users_controller := controllers.UsersController{}
-	users.GET("/edit", users_controller.HandleUsersEdit)
-	users.PATCH("/update", users_controller.HandleUsersUpdate)
+	users_controller := controllers.UsersController{
+    auth_service: auth_service,
+  }
+	users.GET("/edit", services.RequireAuth(users_controller.HandleUsersEdit, auth_service))
+	users.PATCH("/update", services.RequireAuth(users_controller.HandleUsersUpdate, auth_service))
 
 	subtitles := app.Group("/subtitles")
 	subtitles_controller := controllers.SubtitlesController{}

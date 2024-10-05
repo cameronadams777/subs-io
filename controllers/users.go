@@ -4,6 +4,7 @@ import (
 	"app/services"
 	"app/views/components"
 	"app/views/pages/user_pages"
+	"fmt"
 
 	"net/http"
 
@@ -11,14 +12,26 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-type UsersController struct{}
+type UsersController struct {
+  auth services.AuthService
+}
 
 func (uc *UsersController) HandleUsersEdit(c echo.Context) error {
-	user_id := c.Get("user_id")
+  user, err := uc.auth.GetSessionUser(c.Request())
+
+  if err != nil {
+    fmt.Println(err)
+    return c.Redirect(http.StatusTemporaryRedirect, "/error")
+  }
 
 	app_context := get_app_context(c)
 
-	user, err := services.FindUserByID(user_id.(string))
+	user, fetch_user_err := services.FindUserByID(&user.UserID)
+
+  if fetch_user_err != nil {
+    fmt.Println(err)
+    return c.Redirect(http.StatusTemporaryRedirect, "/error")
+  }
 
 	if err != nil {
 		return c.Redirect(302, "/error")

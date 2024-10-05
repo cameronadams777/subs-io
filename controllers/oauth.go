@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"app/services"
 	"context"
 	"net/http"
 
@@ -17,9 +18,22 @@ func (oac OAuthController) HandleOAuthCallback(c echo.Context) error {
     c.Param("provider"),
   )
 
-  _, err := gothic.CompleteUserAuth(c.Response(), c.Request().WithContext(ctx))
+  user, err := gothic.CompleteUserAuth(c.Response(), c.Request().WithContext(ctx))
 
 	if err != nil {
+		return err
+	}
+
+  // Check if user exists based on email. If not, create one. If so,
+  // and the provider is not currently connected, connect and continue.
+
+	session, _ := gothic.Store.Get(c.Request(), services.SESSION_NAME)
+
+	session.Values["user"] = user
+
+	session_sav_err := session.Save(c.Request(), c.Response().Writer)
+	if session_sav_err != nil {
+		c.String(http.StatusInternalServerError, "An error occurred creating session")
 		return err
 	}
 
