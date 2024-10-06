@@ -1,42 +1,25 @@
 package controllers
 
 import (
+	"app/services"
 	"app/structs"
 	"app/views/pages"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/gothic"
 )
 
-type ApplicationViewHandler struct{}
+type ApplicationViewHandler struct {
+	AuthService services.AuthService
+}
 
 func (av *ApplicationViewHandler) HandleHomeIndex(c echo.Context) error {
-	session, err := gothic.Store.Get(c.Request(), "subs_io_session")
+	user, err := av.AuthService.GetSessionUser(c.Request())
+
 	if err != nil {
 		app_context := structs.AppContext{
-			Key: "session",
-			Value: structs.SessionContext{
-				UserID: "",
-			},
-		}
-		return render_with_context(
-			c,
-			pages.HomeIndex(pages.HomePageProps{
-				Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
-			}),
-			app_context,
-		)
-	}
-
-	u := session.Values["user"]
-	if u == nil {
-		app_context := structs.AppContext{
-			Key: "session",
-			Value: structs.SessionContext{
-				UserID: "",
-			},
+			Key:   "session",
+			Value: structs.SessionContext{},
 		}
 		return render_with_context(
 			c,
@@ -50,7 +33,7 @@ func (av *ApplicationViewHandler) HandleHomeIndex(c echo.Context) error {
 	app_context := structs.AppContext{
 		Key: "session",
 		Value: structs.SessionContext{
-			UserID: (u.(goth.User)).UserID,
+      User: &user,
 		},
 	}
 	return render_with_context(

@@ -38,7 +38,9 @@ func main() {
 
 	app.Static("/assets", "assets")
 
-	application_views_controller := controllers.ApplicationViewHandler{}
+	application_views_controller := controllers.ApplicationViewHandler{
+    AuthService: *auth_service,
+  }
 	app.GET("/error", application_views_controller.HandleErrorIndex)
 	app.GET("/not_found", application_views_controller.HandleNotFoundIndex)
 	app.GET("/", application_views_controller.HandleHomeIndex)
@@ -46,18 +48,17 @@ func main() {
 	authentication_controller := controllers.AuthenticationController{}
 	app.GET("/login", authentication_controller.HandleLoginIndex)
 
-
   oauth_controller := controllers.OAuthController{}
 	app.GET("/auth/:provider/callback", oauth_controller.HandleOAuthCallback)
 	app.GET("/logout/:provider", oauth_controller.HandleOAuthLogout)
   app.GET("/auth/:provider", oauth_controller.HandleOAuthIndex)
 
-	users := app.Group("/users")
+	/*users := app.Group("/users")
 	users_controller := controllers.UsersController{
     auth_service: auth_service,
   }
 	users.GET("/edit", services.RequireAuth(users_controller.HandleUsersEdit, auth_service))
-	users.PATCH("/update", services.RequireAuth(users_controller.HandleUsersUpdate, auth_service))
+	users.PATCH("/update", services.RequireAuth(users_controller.HandleUsersUpdate, auth_service))*/
 
 	subtitles := app.Group("/subtitles")
 	subtitles_controller := controllers.SubtitlesController{}

@@ -17,13 +17,11 @@ func get_app_context(c echo.Context) structs.AppContext {
 	}
 
 	app_context := structs.AppContext{
-		Key: "session",
-		Value: structs.SessionContext{
-			UserID: user_id.(string),
-		},
+		Key:   "session",
+		Value: structs.SessionContext{},
 	}
 
-  return app_context
+	return app_context
 }
 
 func render(c echo.Context, component templ.Component) error {

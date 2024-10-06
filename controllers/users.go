@@ -2,21 +2,13 @@ package controllers
 
 import (
 	"app/services"
-	"app/views/components"
-	"app/views/pages/user_pages"
-	"fmt"
-
-	"net/http"
-
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 type UsersController struct {
   auth services.AuthService
 }
 
-func (uc *UsersController) HandleUsersEdit(c echo.Context) error {
+/*func (uc *UsersController) HandleUsersEdit(c echo.Context) error {
   user, err := uc.auth.GetSessionUser(c.Request())
 
   if err != nil {
@@ -62,4 +54,4 @@ func (uc *UsersController) HandleUsersUpdate(c echo.Context) error {
 
 	c.Response().Header().Set("HX-Location", "/users/edit")
 	return c.String(http.StatusOK, "")
-}
+}*/

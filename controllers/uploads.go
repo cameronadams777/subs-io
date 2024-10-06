@@ -27,10 +27,8 @@ func (uc *UploadsController) HandleUploadsIndex(c echo.Context) error {
 	}
 
 	app_context := structs.AppContext{
-		Key: "session",
-		Value: structs.SessionContext{
-			UserID: user_id.(string),
-		},
+		Key:   "session",
+		Value: structs.SessionContext{},
 	}
 	return render_with_context(
 		c,
@@ -56,10 +54,8 @@ func (uc *UploadsController) HandleUploadsShow(c echo.Context) error {
 	}
 
 	app_context := structs.AppContext{
-		Key: "session",
-		Value: structs.SessionContext{
-			UserID: user_id.(string),
-		},
+		Key:   "session",
+		Value: structs.SessionContext{},
 	}
 	return render_with_context(
 		c,
