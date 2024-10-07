@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"app/services"
-	"app/structs"
 	"app/views/pages"
 
 	"github.com/labstack/echo/v4"
@@ -14,28 +13,8 @@ type ApplicationViewHandler struct {
 }
 
 func (av *ApplicationViewHandler) HandleHomeIndex(c echo.Context) error {
-	user, err := av.AuthService.GetSessionUser(c.Request())
+  app_context := get_app_context(c, av.AuthService)
 
-	if err != nil {
-		app_context := structs.AppContext{
-			Key:   "session",
-			Value: structs.SessionContext{},
-		}
-		return render_with_context(
-			c,
-			pages.HomeIndex(pages.HomePageProps{
-				Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
-			}),
-			app_context,
-		)
-	}
-
-	app_context := structs.AppContext{
-		Key: "session",
-		Value: structs.SessionContext{
-      User: &user,
-		},
-	}
 	return render_with_context(
 		c,
 		pages.HomeIndex(pages.HomePageProps{

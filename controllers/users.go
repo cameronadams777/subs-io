@@ -20,16 +20,16 @@ func (uc *UsersController) HandleUsersEdit(c echo.Context) error {
   user, err := uc.AuthService.GetSessionUser(c.Request())
 
   if err != nil {
-    fmt.Println(err)
+    fmt.Println("An error occurred fetching the user from session:", err)
     return c.Redirect(http.StatusTemporaryRedirect, "/error")
   }
 
-  app_context := get_app_context(c)
+  app_context := get_app_context(c, uc.AuthService)
 
   db_user, fetch_user_err := services.FindUserByEmail(user.Email)
 
   if fetch_user_err != nil {
-    fmt.Println(err)
+    fmt.Println("An error occurred fetching the user from the DB:", err)
     return c.Redirect(http.StatusTemporaryRedirect, "/error")
   }
 
@@ -39,23 +39,3 @@ func (uc *UsersController) HandleUsersEdit(c echo.Context) error {
 	}), app_context)
 }
 
-func (uc *UsersController) HandleUsersUpdate(c echo.Context) error {
-	var form services.UpdateUserParams
-
-	if err := c.Bind(&form); err != nil {
-		return render(c, components.FlashMessage(components.FlashMessageProps{
-			Message: "Invalid form data",
-		}))
-	}
-
-	_, err := services.UpdateUser(form)
-
-	if err != nil {
-		return render(c, components.FlashMessage(components.FlashMessageProps{
-			Message: "Invalid form data",
-		}))
-	}
-
-	c.Response().Header().Set("HX-Location", "/users/edit")
-	return c.String(http.StatusOK, "")
-}

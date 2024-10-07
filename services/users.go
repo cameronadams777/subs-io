@@ -86,7 +86,9 @@ func UpsertUserByEmail(email string, user goth.User) (*models.User, error) {
     return existing_user, nil
   }
 
-  new_user := models.User{}
+  new_user := models.User{
+    Email: user.Email,
+  }
 
   if user.Provider == "google" {
     new_user.GoogleUserId = user.UserID

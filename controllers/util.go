@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"app/services"
 	"app/structs"
 	"context"
 	"math/rand"
@@ -9,16 +10,22 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func get_app_context(c echo.Context) structs.AppContext {
-	user_id := c.Get("user_id")
+func get_app_context(c echo.Context, auth_service services.AuthService) structs.AppContext {
+	user, err := auth_service.GetSessionUser(c.Request())
 
-	if user_id == nil {
-		user_id = ""
+	if err != nil {
+		app_context := structs.AppContext{
+			Key:   "session",
+			Value: structs.SessionContext{},
+		}
+    return app_context
 	}
 
 	app_context := structs.AppContext{
-		Key:   "session",
-		Value: structs.SessionContext{},
+		Key: "session",
+		Value: structs.SessionContext{
+      User: &user,
+		},
 	}
 
 	return app_context

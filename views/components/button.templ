@@ -27,6 +27,7 @@ type ButtonProps struct {
 	Color string
 	Text  string
 	Type  string
+  OnClick string
 }
 
 const BASE_BUTTON_CLASS = "w-full px-4 py-2 rounded-md font-semibold transition-colors duration-300"
@@ -35,6 +36,7 @@ templ Button(props ButtonProps) {
 	<button
 		type={ props.Type }
 		class={ BASE_BUTTON_CLASS + " " + ButtonColor(props.Color) + " " + props.Class }
+    @click={ props.OnClick }
 	>
 		{ props.Text }
 	</button>
