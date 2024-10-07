@@ -5,6 +5,7 @@ import (
 	"app/repositories"
 
 	"github.com/google/uuid"
+	"github.com/markbates/goth"
 )
 
 func FindUserByID(id string) (*models.User, error) {
@@ -32,17 +33,15 @@ func FindUserByEmail(email string) (*models.User, error) {
 }
 
 type UpdateUserParams struct {
-  ID string `form:"id"`
-  FirstName string `form:"first_name"`
-  LastName string `form:"last_name"`
-  Email string `form:"email"`
+  ID string
+  GoogleUserId string
+  TiktokUserId string
 }
 
 func UpdateUser(updates UpdateUserParams) (*models.User, error) {
   updated_user := models.User {
-    FirstName: updates.FirstName,
-    LastName: updates.LastName,
-    Email: updates.Email,
+    GoogleUserId: updates.GoogleUserId,
+    TiktokUserId: updates.TiktokUserId,
   }
 
   user_id, err := uuid.Parse(updates.ID)
@@ -58,4 +57,50 @@ func UpdateUser(updates UpdateUserParams) (*models.User, error) {
   }
 
   return user, nil
+}
+
+func UpsertUserByEmail(email string, user goth.User) (*models.User, error) {
+  existing_user, _ := repositories.FindUser(repositories.FindUserParams{
+    Email: email,
+  })
+
+  if existing_user != nil {
+    if user.Provider == "google" && existing_user.GoogleUserId == "" {
+      existing_user.GoogleUserId = user.UserID
+      _, err := repositories.UpdateUser(existing_user.ID, *existing_user)
+
+      if err != nil {
+        return nil, err
+      }
+    }
+
+    if user.Provider == "tiktok" && existing_user.TiktokUserId == "" {
+      existing_user.TiktokUserId = user.UserID
+      _, err := repositories.UpdateUser(existing_user.ID, *existing_user)
+
+      if err != nil {
+        return nil, err
+      }
+    }
+
+    return existing_user, nil
+  }
+
+  new_user := models.User{}
+
+  if user.Provider == "google" {
+    new_user.GoogleUserId = user.UserID
+  }
+
+  if user.Provider == "tiktok" {
+    new_user.TiktokUserId = user.UserID
+  }
+
+  user_create_err := repositories.CreateUser(new_user)
+
+  if user_create_err != nil {
+    return nil, user_create_err
+  }
+
+  return &new_user, nil
 }

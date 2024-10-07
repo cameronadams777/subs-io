@@ -2,36 +2,40 @@ package controllers
 
 import (
 	"app/services"
+	"app/views/components"
+	"app/views/pages/user_pages"
+	"fmt"
+
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type UsersController struct {
-  auth services.AuthService
+  AuthService services.AuthService
 }
 
-/*func (uc *UsersController) HandleUsersEdit(c echo.Context) error {
-  user, err := uc.auth.GetSessionUser(c.Request())
+func (uc *UsersController) HandleUsersEdit(c echo.Context) error {
+  user, err := uc.AuthService.GetSessionUser(c.Request())
 
   if err != nil {
     fmt.Println(err)
     return c.Redirect(http.StatusTemporaryRedirect, "/error")
   }
 
-	app_context := get_app_context(c)
+  app_context := get_app_context(c)
 
-	user, fetch_user_err := services.FindUserByID(&user.UserID)
+  db_user, fetch_user_err := services.FindUserByEmail(user.Email)
 
   if fetch_user_err != nil {
     fmt.Println(err)
     return c.Redirect(http.StatusTemporaryRedirect, "/error")
   }
 
-	if err != nil {
-		return c.Redirect(302, "/error")
-	}
-
 	return render_with_context(c, user_pages.UserEdit(user_pages.UserEditPageProps{
 		Token: c.Get(middleware.DefaultCSRFConfig.ContextKey).(string),
-		User:  *user,
+    User: *db_user,
 	}), app_context)
 }
 
@@ -54,4 +58,4 @@ func (uc *UsersController) HandleUsersUpdate(c echo.Context) error {
 
 	c.Response().Header().Set("HX-Location", "/users/edit")
 	return c.String(http.StatusOK, "")
-}*/
+}

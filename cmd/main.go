@@ -53,12 +53,12 @@ func main() {
 	app.GET("/logout/:provider", oauth_controller.HandleOAuthLogout)
   app.GET("/auth/:provider", oauth_controller.HandleOAuthIndex)
 
-	/*users := app.Group("/users")
+	users := app.Group("/users")
 	users_controller := controllers.UsersController{
-    auth_service: auth_service,
+    AuthService: *auth_service,
   }
 	users.GET("/edit", services.RequireAuth(users_controller.HandleUsersEdit, auth_service))
-	users.PATCH("/update", services.RequireAuth(users_controller.HandleUsersUpdate, auth_service))*/
+	/*users.PATCH("/update", services.RequireAuth(users_controller.HandleUsersUpdate, auth_service))*/
 
 	subtitles := app.Group("/subtitles")
 	subtitles_controller := controllers.SubtitlesController{}

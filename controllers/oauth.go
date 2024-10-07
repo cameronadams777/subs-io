@@ -22,11 +22,19 @@ func (oac OAuthController) HandleOAuthCallback(c echo.Context) error {
   user, err := gothic.CompleteUserAuth(c.Response(), c.Request().WithContext(ctx))
 
 	if err != nil {
-		return err
+    fmt.Println("An error occurred authenticating user with third-party auth:", err)
+    return c.Redirect(http.StatusTemporaryRedirect, "/error")
 	}
 
   // TODO: Check if user exists based on email. If not, create one. If so,
   // and the provider is not currently connected, connect and continue.
+
+  _, upsert_err := services.UpsertUserByEmail(user.Email, user)
+
+  if upsert_err != nil {
+    fmt.Println("Error upserting user during oauth:", upsert_err)
+    return c.Redirect(http.StatusTemporaryRedirect, "/error")
+  }
 
 	session, _ := gothic.Store.Get(c.Request(), services.SESSION_NAME)
 
@@ -34,8 +42,8 @@ func (oac OAuthController) HandleOAuthCallback(c echo.Context) error {
 
 	session_sav_err := session.Save(c.Request(), c.Response().Writer)
 	if session_sav_err != nil {
-    fmt.Println("Session Err:", session_sav_err)
-		return c.String(http.StatusInternalServerError, "An error occurred creating session")
+    fmt.Println("An error occurred creating user's session:", session_sav_err)
+    return c.Redirect(http.StatusTemporaryRedirect, "/error")
 	}
 
 	return c.Redirect(http.StatusPermanentRedirect, "/")

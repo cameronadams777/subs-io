@@ -8,8 +8,14 @@ import (
 )
 
 type UUIDBaseModel struct {
-	ID        uuid.UUID      `gorm:"default:uuid_generate_v3()"`
+	ID        uuid.UUID      `gorm:"type:uuid;primary_key;"`
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deletedAt"`
+}
+
+func (base *UUIDBaseModel) BeforeCreate(tx *gorm.DB) error {
+	uuid := uuid.NewString()
+	tx.Statement.SetColumn("ID", uuid)
+	return nil
 }
